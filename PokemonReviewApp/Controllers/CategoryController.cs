@@ -22,6 +22,8 @@ namespace PokemonReviewApp.Controllers
         [HttpGet]
         public IActionResult GetCategories() 
         {
+            // do it yourself
+
             var categories = _mapper.Map<List<CategoryDto>> 
                 (_categoryRepository.GetCategories());
 
