@@ -10,5 +10,6 @@ namespace PokemonReviewApp.Interfaces
         bool CategoryExists(int categoryId);
         bool CreateCategory (CategoryEntity category);
         bool UpdateCategory (CategoryEntity category);
+        bool DeleteCategory (CategoryEntity categoryid);
     }
 }

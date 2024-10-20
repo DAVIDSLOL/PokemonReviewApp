@@ -28,6 +28,15 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
+        public bool DeleteCategory(CategoryEntity categoryid)
+        {
+            _dataContext.Remove(categoryid);
+
+            var result = DbHelper.DbSaver(_dataContext);
+
+            return result;
+        }
+
         public List<CategoryEntity> GetCategories()
         {
             return _dataContext.Categories.ToList();

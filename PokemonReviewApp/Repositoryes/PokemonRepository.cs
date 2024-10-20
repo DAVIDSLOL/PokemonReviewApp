@@ -43,6 +43,15 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
+        public bool DeletePokemon(Pokemon pokemon)
+        {
+            _dataContext.Remove(pokemon);
+
+            var result = DbHelper.DbSaver(_dataContext);
+
+            return result;
+        }
+
         public List<Pokemon> GetList()
         {
             return _dataContext.Pokemons.OrderBy(p => p.Id).ToList();

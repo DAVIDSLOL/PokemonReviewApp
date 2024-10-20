@@ -6,7 +6,7 @@ using PokemonReviewApp.Models;
 
 namespace PokemonReviewApp.Repositoryes
 {
-    public class CountryRepository : ICountryRepository 
+    public class CountryRepository : ICountryRepository
     {
         private readonly DataContext _dataContext;
 
@@ -56,6 +56,15 @@ namespace PokemonReviewApp.Repositoryes
             _dataContext.Update(country);
 
             var result = DbHelper.DbSaver(_dataContext);
+
+            return result;
+        }
+
+        public bool DeleteCountry(Country country)
+        {
+            _dataContext.Remove(country);
+
+            var result = DbHelper.DbSaver (_dataContext);
 
             return result;
         }

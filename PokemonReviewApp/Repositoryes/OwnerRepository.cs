@@ -24,6 +24,15 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
+        public bool DeleteOwner(Owner owner)
+        {
+            _dataContext.Remove(owner);
+
+            var result = DbHelper.DbSaver(_dataContext);
+
+            return result;
+        }
+
         public Owner GetOwner(int ownerId)
         {
             return _dataContext.Owners.Where(o => o.Id == ownerId).FirstOrDefault(); 
