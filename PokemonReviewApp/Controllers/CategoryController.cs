@@ -25,7 +25,7 @@ namespace PokemonReviewApp.Controllers
             // do it yourself
 
             var categories = _mapper.Map<List<CategoryDto>> 
-                (_categoryRepository.GetCategories());
+                (_categoryRepository.GetCategoriesAsync());
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -63,16 +63,18 @@ namespace PokemonReviewApp.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateCategory([FromBody] CategoryDto categoryCreate)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto categoryCreate)
         {
             if (categoryCreate == null)
                 return BadRequest(ModelState);
 
-            var category = _categoryRepository.GetCategories()
-                .Where(c => c.Name.Trim().ToUpper() == categoryCreate.Name.TrimEnd()
-                .ToUpper()).FirstOrDefault();
+            var categories = await _categoryRepository.GetCategoriesAsync();
+            var existedCategory = categories.Where(c => c.Name.Trim()
+                                            .ToUpper() == categoryCreate.Name.TrimEnd()
+                                            .ToUpper()).FirstOrDefault();
 
-            if (category != null)
+
+            if (existedCategory != null)
             {
                 ModelState.AddModelError("", "Category already exists");
                     return StatusCode(422, ModelState);

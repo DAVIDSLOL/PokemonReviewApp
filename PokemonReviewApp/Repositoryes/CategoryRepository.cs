@@ -1,4 +1,5 @@
-﻿using PokemonReviewApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PokemonReviewApp.Data;
 using PokemonReviewApp.Helper;
 using PokemonReviewApp.Interfaces;
 using PokemonReviewApp.Models;
@@ -37,9 +38,11 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public List<CategoryEntity> GetCategories()
+        public async Task<List<CategoryEntity>> GetCategoriesAsync()
         {
-            return _dataContext.Categories.ToList();
+            var result = await _dataContext.Categories.ToListAsync();
+
+            return result;
         }
 
         public CategoryEntity GetCategory(int id)
