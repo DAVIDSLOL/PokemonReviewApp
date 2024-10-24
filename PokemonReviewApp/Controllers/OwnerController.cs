@@ -25,10 +25,11 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetOwners() 
-        {
-            var owners = _mapper.Map<List<OwnerDto>>
-                (_ownerRepository.GetOwners()) ;
+        public async Task<IActionResult> GetOwners() 
+        { 
+            var getOwners = await (_ownerRepository.GetOwnersAsync());
+
+            var owners = _mapper.Map<List<OwnerDto>>(getOwners);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -37,13 +38,14 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("{ownerId}")]
-        public IActionResult GetOwner(int ownerId)
+        public async Task<IActionResult> GetOwner(int ownerId)
         {
             if (!_ownerRepository.OwnerExist(ownerId))
                 return NotFound();
 
-            var owner = _mapper.Map<OwnerDto>
-                (_ownerRepository.GetOwner(ownerId));
+            var getOwner = await (_ownerRepository.GetOwnerAsync(ownerId));
+
+            var owner = _mapper.Map<OwnerDto>(getOwner);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -52,13 +54,14 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("{ownerId}/pokemon")]
-        public IActionResult GetPokemonByOwner(int ownerId)
+        public async Task<IActionResult> GetPokemonByOwner(int ownerId)
         {
             if (!_ownerRepository.OwnerExist(ownerId))
                 return NotFound();
 
-            var owner = _mapper.Map<List<PokemonDto>>
-                (_ownerRepository.GetPokemonByOwner(ownerId));
+            var getPokemonByOwner = await (_ownerRepository.GetPokemonByOwnerAsync(ownerId));
+
+            var owner = _mapper.Map<List<PokemonDto>>(getPokemonByOwner);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -69,14 +72,17 @@ namespace PokemonReviewApp.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateOwner([FromQuery] int countryId, [FromBody] OwnerDto ownerCreate)
+        public async Task<IActionResult> CreateOwner([FromQuery] int countryId, 
+                                                     [FromBody] OwnerDto ownerCreate)
+
         {
             if (ownerCreate == null)
                 return BadRequest(ModelState);
 
-            var owners = _ownerRepository.GetOwners()
-                .Where(o => o.LastName.Trim().ToUpper() == ownerCreate.LastName.TrimEnd()
-                .ToUpper()).FirstOrDefault();
+            var getOwners = await _ownerRepository.GetOwnersAsync();
+
+            var owners = getOwners.Where(o => o.LastName.Trim().ToUpper() == ownerCreate.LastName.TrimEnd()
+                                  .ToUpper()).FirstOrDefault();
 
             if (owners != null)
             {
@@ -89,7 +95,7 @@ namespace PokemonReviewApp.Controllers
 
             var ownerMap = _mapper.Map<Owner>(ownerCreate);
 
-            ownerMap.Country = _countyRepository.GetCountry(countryId);
+            ownerMap.Country = await _countyRepository.GetCountryAsync(countryId);
 
             if (!_ownerRepository.CreateOwner(ownerMap))
             {
@@ -133,12 +139,12 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteCountry(int ownerId)
+        public async Task<IActionResult> DeleteCountry(int ownerId)
         {
             if (!_ownerRepository.OwnerExist(ownerId))
                 return NotFound();
 
-            var ownerToDelete = _ownerRepository.GetOwner(ownerId);
+            var ownerToDelete = await _ownerRepository.GetOwnerAsync(ownerId);
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -150,7 +156,5 @@ namespace PokemonReviewApp.Controllers
 
             return NoContent();
         }
-
-
     }
 }

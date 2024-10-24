@@ -4,9 +4,9 @@ namespace PokemonReviewApp.Interfaces
 {
     public interface IOwnerRepository
     {
-        List<Owner> GetOwners();
-        Owner GetOwner(int ownerId);
-        List<Pokemon> GetPokemonByOwner(int ownerId);
+        Task <List<Owner>> GetOwnersAsync();
+        Task<Owner> GetOwnerAsync(int ownerId);
+        Task<List<Pokemon>> GetPokemonByOwnerAsync(int ownerId);
         bool OwnerExist(int ownerId);
         bool CreateOwner (Owner owner);
         bool UpdateOwner (Owner owner);

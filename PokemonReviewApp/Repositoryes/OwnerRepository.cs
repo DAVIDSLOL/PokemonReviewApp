@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PokemonReviewApp.Data;
 using PokemonReviewApp.Helper;
 using PokemonReviewApp.Interfaces;
@@ -33,20 +34,26 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public Owner GetOwner(int ownerId)
+        public async Task<Owner> GetOwnerAsync(int ownerId)
         {
-            return _dataContext.Owners.Where(o => o.Id == ownerId).FirstOrDefault(); 
+            var result = await _dataContext.Owners.Where(o => o.Id == ownerId).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public List<Owner> GetOwners()
+        public async Task<List<Owner>> GetOwnersAsync()
         {
-            return _dataContext.Owners.ToList();
+            var result = await _dataContext.Owners.ToListAsync();
+
+            return result;
         }
 
-        public List<Pokemon> GetPokemonByOwner(int ownerId)
+        public async Task<List<Pokemon>> GetPokemonByOwnerAsync(int ownerId)
         {
-            return _dataContext.PokemonOwners.Where(o => o.Owner.Id == ownerId)
-                .Select(p  => p.Pokemon).ToList(); 
+            var result = await _dataContext.PokemonOwners.Where(o => o.Owner.Id == ownerId)
+                                                         .Select(p => p.Pokemon).ToListAsync();
+
+            return result;
         }
          
         public bool OwnerExist(int ownerId)

@@ -4,10 +4,10 @@ namespace PokemonReviewApp.Interfaces
 {
     public interface ICountryRepository
     {
-        List<Country> GetCountries();
-        Country GetCountry(int id);
-        Country GetCountryByOwner(int ownerid);
-        List<Owner> GetOwnersFromACountry(int countyid);
+        Task<List<Country>> GetCountriesAsync();
+        Task<Country> GetCountryAsync(int id);
+        Task<Country> GetCountryByOwnerAsync(int ownerid);
+        Task<List<Owner>> GetOwnersFromACountryAsync(int countyid);
         bool CountryExist(int id);
         bool CreateCountry (Country country);
         bool UpdateCountry (Country country);

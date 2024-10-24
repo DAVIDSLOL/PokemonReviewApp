@@ -5,8 +5,8 @@ namespace PokemonReviewApp.Interfaces
     public interface ICategoryRepository
     {
         Task<List<CategoryEntity>> GetCategoriesAsync();
-        CategoryEntity GetCategory(int id);
-        List<Pokemon> GetPokemonByCategory(int categoryid);
+        Task<CategoryEntity> GetCategoryAsync(int id);
+        Task<List<Pokemon>> GetPokemonByCategoryAsync(int categoryid);
         bool CategoryExists(int categoryId);
         bool CreateCategory (CategoryEntity category);
         bool UpdateCategory (CategoryEntity category);

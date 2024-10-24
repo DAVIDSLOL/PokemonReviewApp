@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PokemonReviewApp.Data;
 using PokemonReviewApp.Helper;
 using PokemonReviewApp.Interfaces;
@@ -16,25 +17,33 @@ namespace PokemonReviewApp.Repositoryes
         }
 
 
-        public List<Country> GetCountries()
+        public async Task<List<Country>> GetCountriesAsync()
         {
-            return _dataContext.Countries.ToList();
+            var result = await _dataContext.Countries.ToListAsync();
+
+            return result;
         }
 
-        public Country GetCountry(int id)
+        public async Task<Country> GetCountryAsync(int id)
         {
-            return _dataContext.Countries.Where(c => c.Id == id).FirstOrDefault();
+            var result = await _dataContext.Countries.Where(c => c.Id == id).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public Country GetCountryByOwner(int ownerId)
+        public async Task<Country> GetCountryByOwnerAsync(int ownerId)
         {
-            return _dataContext.Owners.Where(o => o.Id == ownerId).
-                Select(c => c.Country).FirstOrDefault();
+            var result = await _dataContext.Owners.Where(o => o.Id == ownerId).
+                Select(c => c.Country).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public List<Owner> GetOwnersFromACountry(int countyid)
+        public async Task<List<Owner>> GetOwnersFromACountryAsync(int countyid)
         {
-            return _dataContext.Owners.Where(c => c.Country.Id == countyid).ToList();
+            var result = await _dataContext.Owners.Where(c => c.Country.Id == countyid).ToListAsync();
+
+            return result;
         }
 
         public bool CountryExist(int id)

@@ -20,12 +20,11 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCategories() 
+        public async Task<IActionResult> GetCategories() 
         {
-            // do it yourself
+            var getCategories = await (_categoryRepository.GetCategoriesAsync());
 
-            var categories = _mapper.Map<List<CategoryDto>> 
-                (_categoryRepository.GetCategoriesAsync());
+            var categories = _mapper.Map<List<CategoryDto>>(getCategories); 
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -34,13 +33,14 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("categoryId")]
-        public IActionResult GetCategory([FromQuery] int categoryId) 
+        public async Task<IActionResult> GetCategory([FromQuery] int categoryId) 
         {
             if (!_categoryRepository.CategoryExists(categoryId))
                 return NotFound();
 
-            var category = _mapper.Map<CategoryDto>
-                (_categoryRepository.GetCategory(categoryId));
+            var getCategory = await (_categoryRepository.GetCategoryAsync(categoryId));
+
+            var category = _mapper.Map<CategoryDto>(getCategory);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -49,15 +49,16 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("pokemon/{categoryId}")]
-        public IActionResult GetPokemonByCategoryId([FromQuery] int categoryId) 
+        public async Task<IActionResult> GetPokemonByCategoryId([FromQuery] int categoryId) 
         {
-            var pokemon = _mapper.Map<List<PokemonDto>>
-                (_categoryRepository.GetPokemonByCategory(categoryId)); 
+            var pokemon = await (_categoryRepository.GetPokemonByCategoryAsync(categoryId));
+
+            var pokemonByCategory = _mapper.Map<List<PokemonDto>>(pokemon);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(pokemon);
+            return Ok(pokemonByCategory);
         }
 
         [HttpPost]
@@ -69,10 +70,10 @@ namespace PokemonReviewApp.Controllers
                 return BadRequest(ModelState);
 
             var categories = await _categoryRepository.GetCategoriesAsync();
+
             var existedCategory = categories.Where(c => c.Name.Trim()
                                             .ToUpper() == categoryCreate.Name.TrimEnd()
                                             .ToUpper()).FirstOrDefault();
-
 
             if (existedCategory != null)
             {
@@ -127,12 +128,12 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteCategory(int categoryId)
+        public async Task<IActionResult> DeleteCategory(int categoryId)
         {
             if (!_categoryRepository.CategoryExists(categoryId))
                 return NotFound();
 
-            var catergoryToDelete = _categoryRepository.GetCategory(categoryId);
+            var catergoryToDelete = await _categoryRepository.GetCategoryAsync(categoryId);
 
             if (!ModelState.IsValid)
                 return BadRequest();

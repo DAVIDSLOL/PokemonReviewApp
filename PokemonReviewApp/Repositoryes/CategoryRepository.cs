@@ -45,15 +45,19 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public CategoryEntity GetCategory(int id)
+        public async Task<CategoryEntity> GetCategoryAsync(int id)
         {
-            return _dataContext.Categories.Where(c => c.Id == id).FirstOrDefault();
+            var result = await _dataContext.Categories.Where(c => c.Id == id).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public List<Pokemon> GetPokemonByCategory(int categoryid)
+        public async Task<List<Pokemon>> GetPokemonByCategoryAsync(int categoryid)
         {
-            return _dataContext.PokemonCategories.Where(c => c.CategoryId == categoryid).
-                Select(c => c.Pokemon).ToList();
+            var result = await _dataContext.PokemonCategories.Where(c => c.CategoryId == categoryid).
+                Select(c => c.Pokemon).ToListAsync();
+
+            return result;
         }
 
         public bool UpdateCategory(CategoryEntity category)
