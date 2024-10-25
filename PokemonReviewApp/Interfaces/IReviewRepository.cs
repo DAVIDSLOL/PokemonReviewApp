@@ -4,9 +4,9 @@ namespace PokemonReviewApp.Interfaces
 {
     public interface IReviewRepository
     {
-        List<Review> GetReviews();
-        Review GetReview(int reviewid);
-        List<Review> GetReviewsOfAPokemon(int pokeId);
+        Task <List<Review>> GetReviewsAsync();
+        Task <Review> GetReviewAsync(int reviewid);
+        Task <List<Review>> GetReviewsOfAPokemonAsync(int pokeId);
         bool ReviewExists (int reviewid);
         bool CreateReview (Review review);
         bool UpdateReview (Review review);

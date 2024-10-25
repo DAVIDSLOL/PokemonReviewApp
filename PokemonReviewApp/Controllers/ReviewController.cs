@@ -28,9 +28,10 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetReviews()
+        public async Task<IActionResult> GetReviews()
         {
-            var reviews = _mapper.Map<List<ReviewDto>>(_reviewRepository.GetReviews());
+            var getReviews = await _reviewRepository.GetReviewsAsync();
+            var reviews = _mapper.Map<List<ReviewDto>>(getReviews);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -39,12 +40,14 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("reviewId")]
-        public IActionResult GetReview([FromQuery] int reviewId)
+        public async Task<IActionResult> GetReview([FromQuery] int reviewId)
         {
             if (!_reviewRepository.ReviewExists(reviewId))
                 return NotFound();
 
-            var review = _mapper.Map<ReviewDto>(_reviewRepository.GetReview(reviewId));
+            var getReview = await _reviewRepository.GetReviewAsync(reviewId);
+
+            var review = _mapper.Map<ReviewDto>(getReview);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -53,10 +56,11 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("pokemon/{pokeId}")]
-        public IActionResult GetReviewsForAPokemon (int pokeId)
+        public async Task<IActionResult> GetReviewsForAPokemon (int pokeId)
         {
-            var reviews = _mapper.Map<List<ReviewDto>>
-                (_reviewRepository.GetReviewsOfAPokemon(pokeId));
+            var getReviews = await _reviewRepository.GetReviewsOfAPokemonAsync(pokeId);
+
+            var reviews = _mapper.Map<List<ReviewDto>>(getReviews);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -67,16 +71,17 @@ namespace PokemonReviewApp.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateReview([FromQuery] int reviewerId,
+        public async Task<IActionResult> CreateReview([FromQuery] int reviewerId,
             [FromQuery] int pokemonId,
             [FromBody] ReviewDto reviewCreate)
         {
             if (reviewCreate == null)
                 return BadRequest(ModelState);
 
-            var reviews = _reviewRepository.GetReviews()
-                .Where(r => r.Title.Trim().ToUpper() == reviewCreate.Title.TrimEnd()
-                .ToUpper()).FirstOrDefault();
+            var getReviews = await _reviewRepository.GetReviewsAsync();
+
+            var reviews = getReviews.Where(r => r.Title.Trim().ToUpper() == reviewCreate.Title.
+                                     TrimEnd().ToUpper()).FirstOrDefault();
 
             if (reviews != null)
             {
@@ -89,9 +94,9 @@ namespace PokemonReviewApp.Controllers
 
             var reviewMap = _mapper.Map<Review>(reviewCreate);
 
-            reviewMap.Pokemon = _pokemonRepository.GetPokemon(pokemonId);
+            reviewMap.Pokemon = await _pokemonRepository.GetPokemonAsync(pokemonId);
 
-            reviewMap.Reviewer = _reviewerRepository.GetReviewer(reviewerId);
+            reviewMap.Reviewer = await _reviewerRepository.GetReviewerAsync(reviewerId);
 
             if (!_reviewRepository.CreateReview(reviewMap))
             {
@@ -101,7 +106,6 @@ namespace PokemonReviewApp.Controllers
 
             return Ok("Review succesfully created");
         }
-
 
         [HttpPut("{reviewId}")]
         [ProducesResponseType(204)]
@@ -136,12 +140,12 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteReview(int reviewId)
+        public async Task<IActionResult> DeleteReview(int reviewId)
         {
             if (!_reviewRepository.ReviewExists(reviewId))
                 return NotFound();
 
-            var reviewToDelete = _reviewRepository.GetReview(reviewId);
+            var reviewToDelete = await _reviewRepository.GetReviewAsync(reviewId);
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -153,6 +157,5 @@ namespace PokemonReviewApp.Controllers
 
             return NoContent();
         }
-
     }
 }

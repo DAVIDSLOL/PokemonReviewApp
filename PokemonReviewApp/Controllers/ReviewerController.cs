@@ -21,10 +21,11 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetReviewers()
+        public async Task<IActionResult> GetReviewers()
         {
-            var reviewers = _mapper.Map<List<ReviewerDto>>
-                (_reviewerRepository.GetReviewers());
+            var getReviews = await _reviewerRepository.GetReviewersAsync();
+
+            var reviewers = _mapper.Map<List<ReviewerDto>>(getReviews);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -33,13 +34,14 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("{reviewerId}")]
-        public IActionResult GetReview(int reviewerId)
+        public async Task<IActionResult> GetReviewer(int reviewerId)
         {
             if (!_reviewerRepository.ReviewerExists(reviewerId))
                 return NotFound();
 
-            var reviewer = _mapper.Map<ReviewerDto>
-                (_reviewerRepository.GetReviewer(reviewerId));
+            var getReviewer = await _reviewerRepository.GetReviewerAsync(reviewerId);
+
+            var reviewer = _mapper.Map<ReviewerDto>(getReviewer);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -48,13 +50,14 @@ namespace PokemonReviewApp.Controllers
         }
 
         [HttpGet("{reviewerId}/reviews")]
-        public IActionResult GetReviewsByAReviewer(int reviewerId)
+        public async Task<IActionResult> GetReviewsByAReviewer(int reviewerId)
         {
             if (!_reviewerRepository.ReviewerExists(reviewerId))
                 return NotFound();
 
-            var reviews = _mapper.Map<List<ReviewDto>>
-                (_reviewerRepository.GetReviewsByReviewer(reviewerId));
+            var getReviews = await _reviewerRepository.GetReviewsByReviewerAsync(reviewerId);
+
+            var reviews = _mapper.Map<List<ReviewDto>>(getReviews);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -65,16 +68,17 @@ namespace PokemonReviewApp.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateReviewer([FromBody] ReviewerDto reviewerCreate)
+        public async Task<IActionResult> CreateReviewer([FromBody] ReviewerDto reviewerCreate)
         {
             if (reviewerCreate == null)
                 return BadRequest(ModelState);
 
-            var reviewers = _reviewerRepository.GetReviewers()
-                .Where(r => r.LastName.Trim().ToUpper() == reviewerCreate.LastName.TrimEnd()
-                .ToUpper()).FirstOrDefault();
+            var getReviewers = await _reviewerRepository.GetReviewersAsync();
 
-            if (reviewers != null)
+            var reviewer = getReviewers.Where(r => r.LastName.Trim().ToUpper() == reviewerCreate.LastName.
+                                        TrimEnd().ToUpper()).FirstOrDefault();
+
+            if (reviewer != null)
             {
                 ModelState.AddModelError("", "Reviewer already exists");
                 return StatusCode(422, ModelState);
@@ -127,12 +131,12 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteReviewer(int reviewerId)
+        public async Task<IActionResult> DeleteReviewer(int reviewerId)
         {
             if (!_reviewerRepository.ReviewerExists(reviewerId))
                 return NotFound();
 
-            var ownerToDelete = _reviewerRepository.GetReviewer(reviewerId);
+            var ownerToDelete = await _reviewerRepository.GetReviewerAsync(reviewerId);
 
             if (!ModelState.IsValid)
                 return BadRequest();

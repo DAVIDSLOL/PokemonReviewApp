@@ -16,20 +16,20 @@ namespace PokemonReviewApp.Repositoryes
            _dataContext = dataContext;
         }
 
-        public bool CreateOwner(Owner owner)
+        public async Task<bool> CreateOwnerAsync(Owner owner)
         {
-            _dataContext.Add(owner);
+            await _dataContext.AddAsync(owner);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool DeleteOwner(Owner owner)
+        public async Task<bool> DeleteOwnerAsync(Owner owner)
         {
             _dataContext.Remove(owner);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
@@ -56,16 +56,16 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
          
-        public bool OwnerExist(int ownerId)
+        public async Task<bool> OwnerExistAsync(int ownerId)
         {
-            return _dataContext.Owners.Any(o => o.Id == ownerId);
+            return await _dataContext.Owners.AnyAsync(o => o.Id == ownerId);
         }
 
-        public bool UpdateOwner(Owner owner)
+        public async Task<bool> UpdateOwnerAsync(Owner owner)
         {
             _dataContext.Update(owner);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }

@@ -4,9 +4,9 @@ namespace PokemonReviewApp.Interfaces
 {
     public interface IPokemonRepository
     {
-        List<Pokemon> GetList();
-        Pokemon GetPokemon(int id);
-        Pokemon GetPokemon(string name);
+        Task <List<Pokemon>> GetListAsync();
+        Task <Pokemon> GetPokemonAsync(int id);
+        Task <Pokemon> GetPokemonByNameAsync(string name);
         decimal GetPokemonRating(int pokeid);
         bool PokemonExists (int pokeid);
         bool CreatePokemon (int ownerId, int categoryId, Pokemon pokemon);

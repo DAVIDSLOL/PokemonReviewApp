@@ -36,20 +36,26 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public Reviewer GetReviewer(int reviewerId)
+        public async Task<Reviewer> GetReviewerAsync(int reviewerId)
         {
-            return _dataContext.Reviewers.Where(r => r.Id == reviewerId)
-                .Include(e => e.Reviews).FirstOrDefault();
+            var result = await _dataContext.Reviewers.Where(r => r.Id == reviewerId)
+                                                     .Include(e => e.Reviews).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public List<Reviewer> GetReviewers()
+        public async Task<List<Reviewer>> GetReviewersAsync()
         {
-            return _dataContext.Reviewers.ToList();
+            var result = await _dataContext.Reviewers.ToListAsync();
+
+            return result;
         }
 
-        public List<Review> GetReviewsByReviewer(int reviewerId)
+        public async Task<List<Review>> GetReviewsByReviewerAsync(int reviewerId)
         {
-            return _dataContext.Reviews.Where(r => r.Reviewer.Id == reviewerId).ToList();
+            var result = await _dataContext.Reviews.Where(r => r.Reviewer.Id == reviewerId).ToListAsync();
+
+            return result;
         }
 
         public bool ReviewerExists(int reviewerId)

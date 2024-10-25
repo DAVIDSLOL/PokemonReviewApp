@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PokemonReviewApp.Data;
 using PokemonReviewApp.Helper;
 using PokemonReviewApp.Interfaces;
@@ -15,19 +16,25 @@ namespace PokemonReviewApp.Repositoryes
             _dataContext = dataContext;
         }
 
-        public List<Review> GetReviews()
+        public async Task<List<Review>> GetReviewsAsync()
         {
-            return _dataContext.Reviews.ToList();
+            var result = await _dataContext.Reviews.ToListAsync();
+
+            return result;
         }
 
-        public Review GetReview(int reviewid) 
+        public async Task<Review> GetReviewAsync(int reviewid) 
         {
-            return _dataContext.Reviews.Where(r => r.Id == reviewid)?.FirstOrDefault();
+            var result = await _dataContext.Reviews.Where(r => r.Id == reviewid).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public List<Review> GetReviewsOfAPokemon (int pokeId)
+        public async Task<List<Review>> GetReviewsOfAPokemonAsync (int pokeId)
         {
-            return _dataContext.Reviews.Where(r => r.Pokemon.Id == pokeId).ToList();
+            var result = await _dataContext.Reviews.Where(r => r.Pokemon.Id == pokeId).ToListAsync();
+
+            return result;
         }
 
         public bool ReviewExists(int reviewid)

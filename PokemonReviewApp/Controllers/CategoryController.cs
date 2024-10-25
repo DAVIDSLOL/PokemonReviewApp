@@ -35,7 +35,9 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("categoryId")]
         public async Task<IActionResult> GetCategory([FromQuery] int categoryId) 
         {
-            if (!_categoryRepository.CategoryExists(categoryId))
+            var existedCategory = await _categoryRepository.CategoryExistsAsync(categoryId);
+
+            if (!existedCategory)
                 return NotFound();
 
             var getCategory = await (_categoryRepository.GetCategoryAsync(categoryId));
@@ -86,7 +88,9 @@ namespace PokemonReviewApp.Controllers
 
             var categoryMap = _mapper.Map<CategoryEntity>(categoryCreate);
 
-            if (!_categoryRepository.CreateCategory(categoryMap))
+            var createCategory = await _categoryRepository.CreateCategoryAsync(categoryMap);
+
+            if (!createCategory)
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -99,7 +103,7 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCategory(int categoryId, [FromBody]CategoryDto updatedCategory)
+        public async Task<IActionResult> UpdateCategory(int categoryId, [FromBody]CategoryDto updatedCategory)
         {
             if (updatedCategory == null) 
                 return BadRequest(ModelState);
@@ -107,7 +111,9 @@ namespace PokemonReviewApp.Controllers
             if (categoryId != updatedCategory.Id) 
                 return BadRequest(ModelState);
 
-            if (!_categoryRepository.CategoryExists(categoryId))
+            var existedCategory = await _categoryRepository.CategoryExistsAsync(categoryId);
+
+            if (!existedCategory)
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -115,7 +121,9 @@ namespace PokemonReviewApp.Controllers
 
             var categoryEntity = _mapper.Map<CategoryEntity>(updatedCategory);
 
-            if (!_categoryRepository.UpdateCategory(categoryEntity))
+            var categoryUpdate = await _categoryRepository.UpdateCategoryAsync(categoryEntity);
+
+            if (!categoryUpdate)
             {
                 ModelState.AddModelError("", "Something went wrong utdating category");
                     return StatusCode(500, ModelState);
@@ -130,7 +138,9 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteCategory(int categoryId)
         {
-            if (!_categoryRepository.CategoryExists(categoryId))
+            var existedCategory = await _categoryRepository.CategoryExistsAsync(categoryId);
+
+            if (!existedCategory)
                 return NotFound();
 
             var catergoryToDelete = await _categoryRepository.GetCategoryAsync(categoryId);
@@ -138,7 +148,9 @@ namespace PokemonReviewApp.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_categoryRepository.DeleteCategory(catergoryToDelete))
+            var deletedCategory = await _categoryRepository.DeleteCategoryAsync(catergoryToDelete);
+
+            if (!deletedCategory)
             {
                 ModelState.AddModelError("", "Something went wrong deleting category");
             }

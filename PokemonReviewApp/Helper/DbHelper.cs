@@ -4,9 +4,9 @@ namespace PokemonReviewApp.Helper
 {
     public static class DbHelper
     {
-        public static bool DbSaver(DataContext dataContext)
+        public static async Task<bool> DbSaver(DataContext dataContext)
         {
-            var saved = dataContext.SaveChanges();
+            var saved = await dataContext.SaveChangesAsync();
 
             return saved > 0 ? true : false;
         }

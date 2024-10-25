@@ -46,34 +46,34 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public bool CountryExist(int id)
+        public async Task<bool> CountryExistAsync(int id)
         {
-            return _dataContext.Countries.Any(c => c.Id == id);
+            return await _dataContext.Countries.AnyAsync(c => c.Id == id);
         }
 
-        public bool CreateCountry(Country country)
+        public async Task<bool> CreateCountryAsync(Country country)
         {
-            _dataContext.Add(country);
+            await _dataContext.AddAsync(country);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool UpdateCountry(Country country)
+        public async Task<bool> UpdateCountryAsync(Country country)
         {
             _dataContext.Update(country);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool DeleteCountry(Country country)
+        public async Task<bool> DeleteCountryAsync(Country country)
         {
             _dataContext.Remove(country);
 
-            var result = DbHelper.DbSaver (_dataContext);
+            var result = await DbHelper.DbSaver (_dataContext);
 
             return result;
         }

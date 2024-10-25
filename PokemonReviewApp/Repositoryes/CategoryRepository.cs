@@ -15,25 +15,27 @@ namespace PokemonReviewApp.Repositoryes
         {
             _dataContext = dataContext;
         }
-        public bool CategoryExists(int categoryId)
+        public async Task<bool> CategoryExistsAsync(int categoryId)
         {
-            return _dataContext.Categories.Any(c => c.Id == categoryId);
-        }
-
-        public bool CreateCategory(CategoryEntity category)
-        {
-            _dataContext.Add(category);
-
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await _dataContext.Categories.AnyAsync(c => c.Id == categoryId);
 
             return result;
         }
 
-        public bool DeleteCategory(CategoryEntity categoryid)
+        public async Task<bool> CreateCategoryAsync(CategoryEntity category)
+        {
+            await _dataContext.AddAsync(category);
+
+            var result = await DbHelper.DbSaver(_dataContext);
+
+            return result;
+        }
+
+        public async Task<bool> DeleteCategoryAsync(CategoryEntity categoryid)
         {
             _dataContext.Remove(categoryid);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
@@ -60,11 +62,11 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public bool UpdateCategory(CategoryEntity category)
+        public async Task<bool> UpdateCategoryAsync(CategoryEntity category)
         {
             _dataContext.Update(category);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
             
             return result;
         }

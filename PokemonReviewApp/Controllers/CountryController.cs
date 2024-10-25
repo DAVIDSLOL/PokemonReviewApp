@@ -36,7 +36,9 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("{countryId}")]
         public async Task<IActionResult> GetCountry( int countryId)
         {
-            if (!_countryRepository.CountryExist(countryId))
+            var existedCoutry = await _countryRepository.CountryExistAsync(countryId);
+
+            if (!existedCoutry)
                 return NotFound();
 
             var getCountry = await (_countryRepository.GetCountryAsync(countryId));
@@ -86,7 +88,9 @@ namespace PokemonReviewApp.Controllers
 
             var countryMap = _mapper.Map<Country>(countryCreate);
 
-            if (!_countryRepository.CreateCountry(countryMap))
+            var createdCoutry = await _countryRepository.CreateCountryAsync(countryMap);
+
+            if (!createdCoutry)
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -99,7 +103,7 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCategory(int countryId, [FromBody] CountryDto updatedCountry) 
+        public async Task<IActionResult> UpdateCategory(int countryId, [FromBody] CountryDto updatedCountry) 
         {
             if (updatedCountry == null)
                 return BadRequest(ModelState);
@@ -107,7 +111,9 @@ namespace PokemonReviewApp.Controllers
             if (countryId != updatedCountry.Id)
                 return BadRequest(ModelState);
 
-            if (!_countryRepository.CountryExist(countryId))
+            var existedCountry = await _countryRepository.CountryExistAsync(countryId);
+
+            if (!existedCountry)
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -115,7 +121,9 @@ namespace PokemonReviewApp.Controllers
 
             var countryEntity = _mapper.Map<Country>(updatedCountry);
 
-            if (!_countryRepository.UpdateCountry(countryEntity))
+            var countryUpdate = await _countryRepository.UpdateCountryAsync(countryEntity);
+
+            if (!countryUpdate)
             {
                 ModelState.AddModelError("", "Something went wrong updating country");
                     return StatusCode(500, ModelState);
@@ -130,7 +138,9 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteCountry(int countryId)
         {
-            if (!_countryRepository.CountryExist(countryId))
+            var existedCountry = await _countryRepository.CountryExistAsync(countryId);
+
+            if (!existedCountry)
                 return NotFound();
 
             var countryToDelete = await _countryRepository.GetCountryAsync(countryId);
@@ -138,7 +148,9 @@ namespace PokemonReviewApp.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_countryRepository.DeleteCountry(countryToDelete))
+            var deleteCoutry = await _countryRepository.DeleteCountryAsync(countryToDelete);
+
+            if (!deleteCoutry)
             {
                 ModelState.AddModelError("", "Something went wrong deleting country");
             }

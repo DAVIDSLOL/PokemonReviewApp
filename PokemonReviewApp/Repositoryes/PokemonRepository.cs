@@ -1,4 +1,5 @@
-﻿using PokemonReviewApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PokemonReviewApp.Data;
 using PokemonReviewApp.Dto;
 using PokemonReviewApp.Helper;
 using PokemonReviewApp.Interfaces;
@@ -52,19 +53,25 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public List<Pokemon> GetList()
+        public async Task<List<Pokemon>> GetListAsync()
         {
-            return _dataContext.Pokemons.OrderBy(p => p.Id).ToList();
+            var result = await _dataContext.Pokemons.OrderBy(p => p.Id).ToListAsync();
+
+            return result;
         }
 
-        public Pokemon GetPokemon(int id)
+        public async Task<Pokemon> GetPokemonAsync(int id)
         {
-            return _dataContext.Pokemons.Where(p => p.Id == id).FirstOrDefault();
+            var result = await _dataContext.Pokemons.Where(p => p.Id == id).FirstOrDefaultAsync();
+
+            return result;
         }
 
-        public Pokemon GetPokemon(string name)
+        public async Task<Pokemon> GetPokemonByNameAsync(string name)
         {
-            return _dataContext.Pokemons.Where(p => p.Name == name).FirstOrDefault();
+            var result = await _dataContext.Pokemons.Where(p => p.Name == name).FirstOrDefaultAsync();
+
+            return result;
         } 
 
         public decimal GetPokemonRating(int pokeid)

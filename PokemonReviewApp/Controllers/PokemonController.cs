@@ -28,9 +28,9 @@ namespace PokemonReviewApp.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Pokemon>))]
-        public IActionResult GetPokemons()
+        public async Task<IActionResult> GetPokemons()
         {
-            var pokemonsEntities = _pokemonRepository.GetList();
+            var pokemonsEntities = await _pokemonRepository.GetListAsync();
 
             var pokemons = _mapper.Map<List<PokemonDto>>(pokemonsEntities);
 
@@ -43,12 +43,14 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("pokeId")]
         [ProducesResponseType(200, Type = typeof(Pokemon))]
         [ProducesResponseType(400)]
-        public IActionResult GetPokemon([FromQuery] int pokeid)
+        public async Task<IActionResult> GetPokemon([FromQuery] int pokeid)
         {
             if (!_pokemonRepository.PokemonExists(pokeid))
                 return NotFound();
 
-            var pokemon = _mapper.Map<PokemonDto>(_pokemonRepository.GetPokemon(pokeid));
+            var getPokemon = await _pokemonRepository.GetPokemonAsync(pokeid);
+
+            var pokemon = _mapper.Map<PokemonDto>(getPokemon);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -76,18 +78,19 @@ namespace PokemonReviewApp.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreatePokemon([FromQuery] int ownerId,
-                                           [FromQuery] int catId, 
-                                           [FromBody] PokemonDto pokemonCreate)
+        public async Task<IActionResult> CreatePokemon([FromQuery] int ownerId,
+                                                       [FromQuery] int catId, 
+                                                       [FromBody] PokemonDto pokemonCreate)
         {
             if (pokemonCreate == null)
                 return BadRequest(ModelState);
 
-            var pokemons = _pokemonRepository.GetList()
-                .Where(p => p.Name.Trim().ToUpper() == pokemonCreate.Name.TrimEnd()
-                .ToUpper()).FirstOrDefault();
+            var pokemon = await _pokemonRepository.GetListAsync();
 
-            if (pokemons != null)
+            var cratedPokemon = pokemon.Where(p => p.Name.Trim().ToUpper() == pokemonCreate.Name.
+                                        TrimEnd().ToUpper()).FirstOrDefault();
+
+            if (cratedPokemon != null)
             {
                 ModelState.AddModelError("", "Pokemon already exists");
                 return StatusCode(422, ModelState);
@@ -143,13 +146,14 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult DeletePokemon(int pokeId)
+        public async Task<IActionResult> DeletePokemon(int pokeId)
         {
             if (!_pokemonRepository.PokemonExists(pokeId))
                 return NotFound();
 
-            var reviewsToDelete = _reviewRepository.GetReviewsOfAPokemon(pokeId);
-            var pokemonToDelete = _pokemonRepository.GetPokemon(pokeId);
+            var reviewsToDelete = await _reviewRepository.GetReviewsOfAPokemonAsync(pokeId);
+
+            var pokemonToDelete = await _pokemonRepository.GetPokemonAsync(pokeId);
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -166,6 +170,5 @@ namespace PokemonReviewApp.Controllers
 
             return NoContent();
         }
-
     }
 }
