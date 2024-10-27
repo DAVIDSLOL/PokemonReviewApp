@@ -16,10 +16,10 @@ namespace PokemonReviewApp.Repositoryes
             _dataContext = dataContext;
         }
 
-        public bool CreatePokemon(int ownerId, int categoryId, Pokemon pokemon)
+        public async Task<bool> CreatePokemonAsync(int ownerId, int categoryId, Pokemon pokemon)
         {
-            var pokemonOwnerEntity = _dataContext.Owners.Where(o => o.Id == ownerId).FirstOrDefault();
-            var category = _dataContext.Categories.Where(c => c.Id == categoryId).FirstOrDefault();
+            var pokemonOwnerEntity = await _dataContext.Owners.Where(o => o.Id == ownerId).FirstOrDefaultAsync();
+            var category = await _dataContext.Categories.Where(c => c.Id == categoryId).FirstOrDefaultAsync();
 
             var pokemonOwner = new PokemonOwner()
             {
@@ -35,20 +35,20 @@ namespace PokemonReviewApp.Repositoryes
                 Pokemon = pokemon
             };
 
-            _dataContext.Add(pokemonCategory);
+            await _dataContext.AddAsync(pokemonCategory);
 
-            _dataContext.Add(pokemon);
+            await _dataContext.AddAsync(pokemon);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool DeletePokemon(Pokemon pokemon)
+        public async Task<bool> DeletePokemonAsync(Pokemon pokemon)
         {
             _dataContext.Remove(pokemon);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
@@ -74,7 +74,7 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         } 
 
-        public decimal GetPokemonRating(int pokeid)
+        public async Task<decimal> GetPokemonRatingAsync(int pokeid)
         {
             var review = _dataContext.Reviews.Where(p => p.Pokemon.Id == pokeid);
 
@@ -84,16 +84,18 @@ namespace PokemonReviewApp.Repositoryes
             return ((decimal)review.Sum(r => r.Rating) / review.Count());
         }
 
-        public bool PokemonExists(int pokeid)
+        public async Task<bool> PokemonExistsAsync(int pokeid)
         {
-          return _dataContext.Pokemons.Any(p => p.Id == pokeid);
+          var result = await _dataContext.Pokemons.AnyAsync(p => p.Id == pokeid);
+
+          return result;
         }
 
-        public bool UpdatePokemon(int ownerId, int categoryId, Pokemon pokemon)
+        public async Task<bool> UpdatePokemonAsync(int ownerId, int categoryId, Pokemon pokemon)
         {
             _dataContext.Update(pokemon);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }

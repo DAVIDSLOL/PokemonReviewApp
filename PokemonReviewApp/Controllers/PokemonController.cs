@@ -45,7 +45,9 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetPokemon([FromQuery] int pokeid)
         {
-            if (!_pokemonRepository.PokemonExists(pokeid))
+            var existedPokemon = await _pokemonRepository.PokemonExistsAsync(pokeid);
+
+            if (!existedPokemon)
                 return NotFound();
 
             var getPokemon = await _pokemonRepository.GetPokemonAsync(pokeid);
@@ -61,13 +63,15 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("{pokeId}/categories")]
         [ProducesResponseType(200, Type = typeof(decimal))]
         [ProducesResponseType(400)]
-        public IActionResult GetPokemonRaiting([FromRoute] int pokeId)
+        public async Task<IActionResult> GetPokemonRaiting([FromRoute] int pokeId)
 
         {
-            if (!_pokemonRepository.PokemonExists(pokeId))
+            var existedPokemon = await _pokemonRepository.PokemonExistsAsync(pokeId);
+
+            if (!existedPokemon)
                 return NotFound();
 
-            var raiting = _pokemonRepository.GetPokemonRating(pokeId);
+            var raiting = await _pokemonRepository.GetPokemonRatingAsync(pokeId);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -101,7 +105,9 @@ namespace PokemonReviewApp.Controllers
 
             var pokemonEntity = _mapper.Map<Pokemon>(pokemonCreate);
 
-            if (!_pokemonRepository.CreatePokemon(ownerId, catId, pokemonEntity))
+            var createPokemon = await _pokemonRepository.CreatePokemonAsync(ownerId, catId, pokemonEntity);
+
+            if (!createPokemon)
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -114,7 +120,7 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdatePokemon(int pokeId,
+        public async Task<IActionResult> UpdatePokemon(int pokeId,
                                            [FromQuery] int ownerId,
                                            [FromQuery] int catId,
                                            [FromBody] PokemonDto updatedPokemon)
@@ -125,7 +131,9 @@ namespace PokemonReviewApp.Controllers
             if (pokeId != updatedPokemon.Id)
                 return BadRequest(ModelState);
 
-            if (!_pokemonRepository.PokemonExists(pokeId))
+            var existedPokemon = await _pokemonRepository.PokemonExistsAsync(pokeId);
+
+            if (!existedPokemon)
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -133,7 +141,9 @@ namespace PokemonReviewApp.Controllers
 
             var pokemonEntity = _mapper.Map<Pokemon>(updatedPokemon);
 
-            if (!_pokemonRepository.UpdatePokemon(ownerId, catId, pokemonEntity))
+            var updatePokemon = await _pokemonRepository.UpdatePokemonAsync(ownerId, catId, pokemonEntity);
+
+            if (!updatePokemon)
             {
                 ModelState.AddModelError("", "Something went wrong updating pokemon");
                 return StatusCode(500, ModelState);
@@ -148,7 +158,9 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeletePokemon(int pokeId)
         {
-            if (!_pokemonRepository.PokemonExists(pokeId))
+            var existedPokemon = await _pokemonRepository.PokemonExistsAsync(pokeId);
+
+            if (!existedPokemon)
                 return NotFound();
 
             var reviewsToDelete = await _reviewRepository.GetReviewsOfAPokemonAsync(pokeId);
@@ -158,12 +170,16 @@ namespace PokemonReviewApp.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_reviewRepository.DeleteReviews(reviewsToDelete.ToList()))
+            var deleteReciews = await _reviewRepository.DeleteReviewsAsync(reviewsToDelete.ToList());
+
+            if (!deleteReciews)
             {
                 ModelState.AddModelError("", "Something went wrong deleting reviews");
             }
 
-            if (!_pokemonRepository.DeletePokemon(pokemonToDelete))
+            var deletePokemon = await _pokemonRepository.DeletePokemonAsync(pokemonToDelete);
+
+            if (!deletePokemon)
             {
                 ModelState.AddModelError("", "Something went wrong deleting pokemon");
             }

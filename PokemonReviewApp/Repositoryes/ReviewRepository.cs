@@ -37,43 +37,45 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public bool ReviewExists(int reviewid)
+        public async Task<bool> ReviewExistsAsync(int reviewid)
         {
-            return _dataContext.Reviews.Any(r => r.Id == reviewid);
-        }
-
-        public bool CreateReview(Review review)
-        {
-            _dataContext.Add(review);
-
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await _dataContext.Reviews.AnyAsync(r => r.Id == reviewid);
 
             return result;
         }
 
-        public bool UpdateReview(Review review)
+        public async Task<bool> CreateReviewAsync(Review review)
+        {
+            await _dataContext.AddAsync(review);
+
+            var result = await DbHelper.DbSaver(_dataContext);
+
+            return result;
+        }
+
+        public async Task<bool> UpdateReviewAsync(Review review)
         {
             _dataContext.Update(review);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool DeleteReview(Review review)
+        public async Task<bool> DeleteReviewAsync(Review review)
         {
             _dataContext.Remove(review);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool DeleteReviews(List<Review> reviews)
+        public async Task<bool> DeleteReviewsAsync(List<Review> reviews)
         {
             _dataContext.RemoveRange(reviews);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }

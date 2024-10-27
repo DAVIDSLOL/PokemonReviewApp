@@ -18,20 +18,20 @@ namespace PokemonReviewApp.Repositoryes
             _mapper = mapper;
         }
 
-        public bool CreateReviewer(Reviewer reviewer)
+        public async Task<bool> CreateReviewerAsync(Reviewer reviewer)
         {
-            _dataContext.Add(reviewer);
+            await _dataContext.AddAsync(reviewer);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
 
-        public bool DeleteReviewer(Reviewer reviewer)
+        public async Task<bool> DeleteReviewerAsync(Reviewer reviewer)
         {
             _dataContext.Remove(reviewer);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result;
         }
@@ -58,16 +58,18 @@ namespace PokemonReviewApp.Repositoryes
             return result;
         }
 
-        public bool ReviewerExists(int reviewerId)
+        public async Task<bool> ReviewerExistsAsync(int reviewerId)
         {
-            return _dataContext.Reviewers.Any(r => r.Id == reviewerId);
+            var result = await _dataContext.Reviewers.AnyAsync(r => r.Id == reviewerId);
+
+            return result;
         }
 
-        public bool UpdateReviewer(Reviewer reviewer)
+        public async Task<bool> UpdateReviewerAsync(Reviewer reviewer)
         {
             _dataContext.Update(reviewer);
 
-            var result = DbHelper.DbSaver(_dataContext);
+            var result = await DbHelper.DbSaver(_dataContext);
 
             return result; 
         }

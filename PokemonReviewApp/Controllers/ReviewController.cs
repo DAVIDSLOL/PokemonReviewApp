@@ -42,7 +42,9 @@ namespace PokemonReviewApp.Controllers
         [HttpGet("reviewId")]
         public async Task<IActionResult> GetReview([FromQuery] int reviewId)
         {
-            if (!_reviewRepository.ReviewExists(reviewId))
+            var existedReview = await _reviewRepository.ReviewExistsAsync(reviewId);
+
+            if (!existedReview)
                 return NotFound();
 
             var getReview = await _reviewRepository.GetReviewAsync(reviewId);
@@ -80,7 +82,7 @@ namespace PokemonReviewApp.Controllers
 
             var getReviews = await _reviewRepository.GetReviewsAsync();
 
-            var reviews = getReviews.Where(r => r.Title.Trim().ToUpper() == reviewCreate.Title.
+            var reviews =  getReviews.Where(r => r.Title.Trim().ToUpper() == reviewCreate.Title.
                                      TrimEnd().ToUpper()).FirstOrDefault();
 
             if (reviews != null)
@@ -98,7 +100,9 @@ namespace PokemonReviewApp.Controllers
 
             reviewMap.Reviewer = await _reviewerRepository.GetReviewerAsync(reviewerId);
 
-            if (!_reviewRepository.CreateReview(reviewMap))
+            var createReview = await _reviewRepository.CreateReviewAsync(reviewMap);
+
+            if (!createReview)
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -111,7 +115,7 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateReview(int reviewId, [FromBody] ReviewDto updatedReview)
+        public async Task<IActionResult> UpdateReview(int reviewId, [FromBody] ReviewDto updatedReview)
         {
             if (updatedReview == null)
                 return BadRequest(ModelState);
@@ -119,7 +123,9 @@ namespace PokemonReviewApp.Controllers
             if (reviewId != updatedReview.Id)
                 return BadRequest(ModelState);
 
-            if (!_reviewRepository.ReviewExists(reviewId))
+            var existedReview = await _reviewRepository.ReviewExistsAsync(reviewId);
+
+            if (!existedReview)
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -127,7 +133,9 @@ namespace PokemonReviewApp.Controllers
 
             var reviewEntity = _mapper.Map<Review>(updatedReview);
 
-            if (!_reviewRepository.UpdateReview(reviewEntity))
+            var updateReview = await _reviewRepository.UpdateReviewAsync(reviewEntity);
+
+            if (!updateReview)
             {
                 ModelState.AddModelError("", "Something went wrong updating review");
                 return StatusCode(500, ModelState);
@@ -142,7 +150,9 @@ namespace PokemonReviewApp.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteReview(int reviewId)
         {
-            if (!_reviewRepository.ReviewExists(reviewId))
+            var existedReview = await _reviewRepository.ReviewExistsAsync(reviewId);
+
+            if (!existedReview)
                 return NotFound();
 
             var reviewToDelete = await _reviewRepository.GetReviewAsync(reviewId);
@@ -150,7 +160,9 @@ namespace PokemonReviewApp.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_reviewRepository.DeleteReview(reviewToDelete))
+            var deleteReview = await _reviewRepository.DeleteReviewAsync(reviewToDelete);
+
+            if (!deleteReview)
             {
                 ModelState.AddModelError("", "Something went wrong deleting review");
             }
